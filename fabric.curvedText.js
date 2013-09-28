@@ -79,7 +79,7 @@
 		},
 		initialize: function(text, options) {
 			options || (options = {});
-			this.letters = new fabric.Group([], {selectable: false});
+			this.letters = new fabric.Group([], {selectable: false, padding: 0});
 			this.__skipDimension = true;
 			this.setOptions(options);
 			this.__skipDimension = false;
@@ -118,14 +118,15 @@
 					var multiplier = this.reverse ? 1 : -1;
 					curAngle = (multiplier * -i * parseInt(this.spacing, 10)) + (multiplier * align);
 					angleRadians = curAngle * (Math.PI / 180);
-					this.letters.item(i).set('top', (multiplier * Math.cos(angleRadians) * this.radius));
-					this.letters.item(i).set('left', (multiplier * -Math.sin(angleRadians) * this.radius));
-					this.letters.item(i).setAngle(curAngle);
+
 					for (var key in this.delegatedProperties) {
 						this.letters.item(i).set(key, this.get(key));
 					}
-					this.letters.item(i).padding = 0;
-					this.letters.item(i).selectable = false;
+					this.letters.item(i).set('top', (multiplier * Math.cos(angleRadians) * this.radius));
+					this.letters.item(i).set('left', (multiplier * -Math.sin(angleRadians) * this.radius));
+					this.letters.item(i).setAngle(curAngle);
+					this.letters.item(i).set('padding', 0);
+					this.letters.item(i).set('selectable',false);
 				}
 				// Update group coords
 				this.letters._calcBounds();
