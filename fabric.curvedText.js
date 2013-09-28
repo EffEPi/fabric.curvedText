@@ -38,7 +38,7 @@
 		 */
 		spacing: 15,
 		
-        letters: new fabric.Group([], {}),
+        letters: null,
 
 		/**
 		 * Reversing the radius (position of the original point)
@@ -54,7 +54,7 @@
 			fontWeight:				true,
 			fontSize:				true,
 			fontStyle:				true,
-			lineHeight:				true,
+//			lineHeight:				true,		//Not supported until there will be a multiline support
 			textDecoration:			true,
 			textAlign:				true,
 			stroke:					true,
@@ -69,9 +69,10 @@
 			fontFamily:				true,
 			textDecoration:			true,
 			fontStyle:				true,
-			lineHeight:				true,
+//			lineHeight:				true,		//Not supported until there will be a multiline support
 			stroke:					true,
 			strokeWidth:			true,
+			textAlign:				true,
 			text:					true,
 			radius:					true,
 			spacing:				true,
@@ -79,6 +80,7 @@
 		},
 		initialize: function(text, options){
 			options || (options = { });
+			options['letters'] = new fabric.Group([], {});
 			this.__skipDimension = true;
 			this.setOptions(options);
 			this.__skipDimension = false;
@@ -89,51 +91,54 @@
 			this.setText(text);
 		},
 		setText: function(text){
-			while ( text.length !== 0 && this.letters.size() >= text.length ) {
-				this.letters.remove( this.letters.item( this.letters.size()-1 ) );
-			}
-			for(var i=0; i<text.length; i++){
-				//I need to pass the options from the main options
-				if(this.letters.item(i) === undefined){
-					this.letters.add(new fabric.Text(text[i]));
-				}else{
-					this.letters.item(i).setText(text[i]);
+			if(this.letters){
+				while ( text.length !== 0 && this.letters.size() >= text.length ) {
+					this.letters.remove( this.letters.item( this.letters.size()-1 ) );
 				}
+				for(var i=0; i<text.length; i++){
+					//I need to pass the options from the main options
+					if(this.letters.item(i) === undefined){
+						this.letters.add(new fabric.Text(text[i]));
+					}else{
+						this.letters.item(i).setText(text[i]);
+					}
+				}
+				this.callSuper('setText', text);
 			}
-			this.callSuper('setText', text);
-//			this.letters.top = this.top;
-//			this.letters.left = this.left;
 		},
 		_render: function(ctx) {
-			var curAngle=0,
-					angleRadians=0,
-					align=0;
-			// Text align
-			if(this.get('textAlign') === 'center') {
-				align = ( this.spacing / 2) * ( this.text.length - 1) ;
-			}else if(this.get('textAlign') === 'right') {
-				align = ( this.spacing ) * ( this.text.length - 1) ;
+			if(this.letters){
+				var curAngle=0,
+						angleRadians=0,
+						align=0;
+				// Text align
+				if(this.get('textAlign') === 'center' || this.get('textAlign') === 'justify') {
+					align = ( this.spacing / 2) * ( this.text.length - 1) ;
+				}else if(this.get('textAlign') === 'right') {
+					align = ( this.spacing ) * ( this.text.length - 1) ;
+				}
+				for (var i = 0, len = this.text.length; i < len; i++) {
+					// Find coords of each letters (radians : angle*(Math.PI / 180)
+					var multiplier = this.reverse?1:-1;
+					curAngle = (multiplier*-i*parseInt(this.spacing, 10))+(multiplier * align);
+					angleRadians = curAngle * (Math.PI / 180);
+					this.letters.item(i).set('top',(multiplier*Math.cos(angleRadians)*this.radius));
+					this.letters.item(i).set('left',(multiplier*-Math.sin(angleRadians)*this.radius));
+					this.letters.item(i).setAngle(curAngle);
+				}
+				// Update group coords
+				this.letters._calcBounds();
+				this.letters._updateObjectsCoords();
+				this.letters.saveCoords();
+	//            this.letters.render(ctx);
+				this.width = this.letters.width;
+				this.height = this.letters.height;
 			}
-			for (var i = 0, len = this.text.length; i < len; i++) {
-				// Find coords of each letters (radians : angle*(Math.PI / 180)
-				var multiplier = this.reverse?1:-1;
-				curAngle = (multiplier*-i*parseInt(this.spacing, 10))+(multiplier * align);
-				angleRadians = curAngle * (Math.PI / 180);
-				this.letters.item(i).set('top',(multiplier*Math.cos(angleRadians)*this.radius));
-				this.letters.item(i).set('left',(multiplier*-Math.sin(angleRadians)*this.radius));
-				this.letters.item(i).setAngle(curAngle);
-			}
-			// Update group coords
-			this.letters._calcBounds();
-			this.letters._updateObjectsCoords();
-			this.letters.saveCoords();
-//            this.letters.render(ctx);
-			this.width = this.letters.width;
-			this.height = this.letters.height;
 		},
 		render: function(ctx, noTransform){
 			// do not render if object is not visible
-			if (!this.visible) return;
+			if(!this.visible) return;
+			if(!this.letters) return;
 
 			ctx.save();
 			this.transform(ctx);
@@ -155,6 +160,8 @@
 				for(var key in this.delegatedProperties) {
 					object.set(key, this.get(key));
 				}
+				object.padding = 0;
+				object.lineHeight = 1;
 
 				object.borderScaleFactor = groupScaleFactor;
 				object.hasRotatingPoint = false;
@@ -178,15 +185,17 @@
 		*/
 		_set: function(key, value) {
 			this.callSuper('_set',key, value);
-			if(key in this.delegatedProperties) {
-				var i = this.letters.size();
-				while (i--) {
-					this.letters.item(i).set(key, value);
+			if(this.letters){
+				if(key in this.delegatedProperties) {
+					var i = this.letters.size();
+					while (i--) {
+						this.letters.item(i).set(key, value);
+					}
 				}
-			}
-			if (key in this._dimensionAffectingProps) {
-				this._initDimensions();
-				this.setCoords();
+				if (key in this._dimensionAffectingProps) {
+					this._initDimensions();
+					this.setCoords();
+				}
 			}
 		},
 		toObject: function(propertiesToInclude) {
@@ -212,8 +221,10 @@
 		 */
 		toSVG: function() {
 			var objectsMarkup = [ ];
-			for (var i = 0, len = this.letters.size(); i < len; i++) {
-				objectsMarkup.push(this.letters.item(i).toSVG());
+			if(this.letters){
+				for (var i = 0, len = this.letters.size(); i < len; i++) {
+					objectsMarkup.push(this.letters.item(i).toSVG());
+				}
 			}
 			return (
 			        '<g transform="' + this.getSvgTransform() + '">' +
