@@ -193,7 +193,7 @@
 				radius: this.radius,
 				spacing: this.spacing,
 				reverse: this.reverse,
-				letters: this.letters
+//				letters: this.letters	//No need to pass this, the letters are recreated on the fly every time when initiated
 			});
 		},
 		/**
