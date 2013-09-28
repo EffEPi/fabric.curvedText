@@ -48,46 +48,43 @@
 		reverse: false,
         
 		delegatedProperties: {
+			backgroundColor:		true,
 			fill:					true,
 			opacity:				true,
 			fontFamily:				true,
 			fontWeight:				true,
 			fontSize:				true,
 			fontStyle:				true,
-//			lineHeight:				true,		//Not supported until there will be a multiline support
-			textDecoration:			true,
+			lineHeight:				true,
 			textAlign:				true,
+			textBackgroundColor:	true,
+			textDecoration:			true,
 			stroke:					true,
-			strokeWidth:			true,
-			backgroundColor:		true,
-			textBackgroundColor:	true
+			strokeWidth:			true
 		},
 		_dimensionAffectingProps: {
 			align:					true, 
 			fontSize:				true,
 			fontWeight:				true,
 			fontFamily:				true,
-			textDecoration:			true,
 			fontStyle:				true,
-//			lineHeight:				true,		//Not supported until there will be a multiline support
+			lineHeight:				true,
+			radius:					true,
+			reverse:				true,
 			stroke:					true,
 			strokeWidth:			true,
-			textAlign:				true,
 			text:					true,
-			radius:					true,
-			spacing:				true,
-			reverse:				true
+			textAlign:				true,
+			textDecoration:			true,
+			spacing:				true
 		},
 		initialize: function(text, options){
 			options || (options = { });
-			options['letters'] = new fabric.Group([], {});
+			this.letters = new fabric.Group([], {});
 			this.__skipDimension = true;
 			this.setOptions(options);
 			this.__skipDimension = false;
 			this.callSuper('initialize', options);
-//			this.letters = new fabric.Group([], options);
-//			this._initDimensions();
-//			this.setCoords();
 			this.setText(text);
 		},
 		setText: function(text){
@@ -161,7 +158,7 @@
 					object.set(key, this.get(key));
 				}
 				object.padding = 0;
-				object.lineHeight = 1;
+//				object.lineHeight = 1;
 
 				object.borderScaleFactor = groupScaleFactor;
 				object.hasRotatingPoint = false;
