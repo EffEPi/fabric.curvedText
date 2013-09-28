@@ -192,7 +192,7 @@
 			return extend(this.callSuper('toObject', propertiesToInclude), {
 				radius: this.radius,
 				spacing: this.spacing,
-				reverse: this.reverse,
+				reverse: this.reverse
 //				letters: this.letters	//No need to pass this, the letters are recreated on the fly every time when initiated
 			});
 		},
