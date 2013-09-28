@@ -4,11 +4,7 @@
 	
 	var fabric = global.fabric || (global.fabric = { }),
 		extend = fabric.util.object.extend,
-//		clone = fabric.util.object.clone,
-//		min = fabric.util.array.min,
-//		max = fabric.util.array.max,
-//		invoke = fabric.util.array.invoke,
-		i=0
+		clone = fabric.util.object.clone
 		;
 
 	if (fabric.curvedText) {
@@ -41,8 +37,8 @@
 		 * @default 20
 		 */
 		spacing: 15,
-        
-        letters: null,
+		
+		letters: null,
 
 		/**
 		 * Reversing the radius (position of the original point)
@@ -77,9 +73,9 @@
 			stroke:					true,
 			strokeWidth:			true,
 			text:					true,
-            radius:					true,
-            spacing:				true,
-            reverse:				true
+			radius:					true,
+			spacing:				true,
+			reverse:				true
 		},
 		initialize: function(text, options){
 			options || (options = { });
@@ -97,28 +93,17 @@
 			}
 			for(var i=0; i<text.length; i++){
 				//I need to pass the options from the main options
-				if ( this.letters.item(i) === undefined ){
-					var letter = new fabric.Text(text[i]);
-					letter.group = this;
-					this.letters.add(letter);
+				if(this.letters.item(i) === undefined){
+					this.letters.add(new fabric.Text(text[i]));
+				}else{
+					this.letters.item(i).setText(text[i]);
 				}
-				this.letters.item(i).setText(text[i]);
 			}
-//            this.text = text;
 			this.callSuper('setText', text);
-			this.letters.top = this.top;
-			this.letters.left = this.left;
-		},
-		toObject: function(propertiesToInclude) {
-			return extend(this.callSuper('toObject', propertiesToInclude), {
-				radius: this.radius,
-				spacing: this.spacing,
-				reverse: this.reverse,
-                letters: this.letters
-			});
+//			this.letters.top = this.top;
+//			this.letters.left = this.left;
 		},
 		_render: function(ctx) {
-//            this.callSuper('_render', ctx);
 			var curAngle=0,
 					angleRadians=0,
 					align=0;
@@ -142,8 +127,8 @@
 			this.letters._updateObjectsCoords();
 			this.letters.saveCoords();
 //            this.letters.render(ctx);
-            this.width = this.letters.width;
-            this.height = this.letters.height;
+			this.width = this.letters.width;
+			this.height = this.letters.height;
 		},
 		render: function(ctx, noTransform){
 			// do not render if object is not visible
@@ -202,7 +187,39 @@
 				this._initDimensions();
 				this.setCoords();
 			}
+		},
+		toObject: function(propertiesToInclude) {
+			return extend(this.callSuper('toObject', propertiesToInclude), {
+				radius: this.radius,
+				spacing: this.spacing,
+				reverse: this.reverse,
+				letters: this.letters
+			});
+		},
+		/**
+		 * Returns string represenation of a group
+		 * @return {String}
+		 */
+		toString: function() {
+			return '#<fabric.curvedText (' + this.complexity() +
+					'): { "text": "' + this.text + '", "fontFamily": "' + this.fontFamily + '", "radius": "' + this.radius + '", "spacing": "' + this.spacing + '", "reverse": "' + this.reverse + '" }>';
+		},
+		/* _TO_SVG_START_ */
+		/**
+		 * Returns svg representation of an instance
+		 * @return {String} svg representation of an instance
+		 */
+		toSVG: function() {
+			var objectsMarkup = [ ];
+			for (var i = 0, len = this.letters.size(); i < len; i++) {
+				objectsMarkup.push(this.letters.item(i).toSVG());
+			}
+			return (
+			        '<g transform="' + this.getSvgTransform() + '">' +
+					objectsMarkup.join('') +
+					'</g>');
 		}
+		/* _TO_SVG_END_ */
 });
 
 	/**
@@ -212,13 +229,12 @@
 	 * @param {Object} object Object to create a group from
 	 * @param {Object} [options] Options object
 	 * @return {fabric.curvedText} An instance of fabric.curvedText
-	*/
-	fabric.curvedText.fromObject = function(object, callback) {
-		fabric.util.enlivenObjects(object.objects, function(enlivenedObjects) {
-			delete object.objects;
-			callback && callback(new fabric.curvedText(enlivenedObjects, object));
-		});
+	 */
+	fabric.curvedText.fromObject = function(object) {
+		return new fabric.curvedText(object.text, clone(object));
 	};
+
+	fabric.util.createAccessors(fabric.curvedText);
 
 	/**
 	 * Indicates that instances of this type are async
@@ -226,7 +242,7 @@
 	 * @memberOf fabric.curvedText
 	 * @type Boolean
 	 * @default
-	*/
-	fabric.curvedText.async = true;
+	 */
+	fabric.curvedText.async = false;
 
 })(typeof exports !== 'undefined' ? exports : this);
