@@ -22,8 +22,23 @@
 			'lineHeight',
 			'textBackgroundColor',
 			'useNative',
-			'path'
+			'path',
+
+			'radius',
+			'spacing',
+			'reverse'
 	);
+	var _dimensionAffectingProps = fabric.Text.prototype._dimensionAffectingProps;
+	_dimensionAffectingProps['radius']			= true;
+	_dimensionAffectingProps['spacing']			= true;
+	_dimensionAffectingProps['reverse']			= true;
+	
+	var delegatedProperties = fabric.Group.prototype.delegatedProperties;
+	delegatedProperties['backgroundColor']		= true;
+	delegatedProperties['textBackgroundColor']	= true;
+	delegatedProperties['textDecoration']		= true;
+	delegatedProperties['stroke']				= true;
+	delegatedProperties['strokeWidth']			= true;
 	/**
 	 * Group class
 	 * @class fabric.CurvedText
@@ -51,7 +66,7 @@
 		 */
 		spacing: 15,
 
-		letters: null,
+//		letters: null,
 
 		/**
 		 * Reversing the radius (position of the original point)
@@ -67,37 +82,19 @@
 		 */
 		stateProperties:      stateProperties,
 
-		delegatedProperties: {
-			backgroundColor:		true,
-			fill:					true,
-			opacity:				true,
-			fontFamily:				true,
-			fontWeight:				true,
-			fontSize:				true,
-			fontStyle:				true,
-			lineHeight:				true,
-			textAlign:				true,
-			textBackgroundColor:	true,
-			textDecoration:			true,
-			stroke:					true,
-			strokeWidth:			true
-		},
-		_dimensionAffectingProps: {
-			align:					true, 
-			fontSize:				true,
-			fontWeight:				true,
-			fontFamily:				true,
-			fontStyle:				true,
-			lineHeight:				true,
-			radius:					true,
-			reverse:				true,
-			stroke:					true,
-			strokeWidth:			true,
-			text:					true,
-			textAlign:				true,
-			textDecoration:			true,
-			spacing:				true
-		},
+		/**
+		 * Properties that are delegated to group objects when reading/writing
+		 * @param {Object} delegatedProperties
+		*/
+		delegatedProperties: delegatedProperties,
+
+		/**
+		 * Properties which when set cause object to change dimensions
+		 * @type Object
+		 * @private
+		*/
+		_dimensionAffectingProps: _dimensionAffectingProps,
+
 		initialize: function(text, options) {
 			options || (options = {});
 			this.letters = new fabric.Group([], {selectable: false, padding: 0});
@@ -203,12 +200,13 @@
 		_set: function(key, value) {
 			this.callSuper('_set', key, value);
 			if (this.letters) {
-				if (key in this.delegatedProperties) {
-					var i = this.letters.size();
-					while (i--) {
-						this.letters.item(i).set(key, value);
-					}
-				}
+			//Properties are delegated with the object is rendered
+//				if (key in this.delegatedProperties) {
+//					var i = this.letters.size();
+//					while (i--) {
+//						this.letters.item(i).set(key, value);
+//					}
+//				}
 				if (key in this._dimensionAffectingProps) {
 					this._initDimensions();
 					this.setCoords();
