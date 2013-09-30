@@ -248,7 +248,7 @@
 			];
 			if (this.letters) {
 				for (var i = 0, len = this.letters.size(); i < len; i++) {
-					markup.push(this._objects[i].toSVG(reviver));
+					markup.push(this.letters.item(i).toSVG(reviver));
 				}
 			}
 			markup.push('</g>');
