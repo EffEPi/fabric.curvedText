@@ -10,20 +10,8 @@
 		fabric.warn('fabric.CurvedText is already defined');
 		return;
 	}
-	var stateProperties = fabric.Object.prototype.stateProperties.concat();
+	var stateProperties = fabric.Text.prototype.stateProperties.concat();
 	stateProperties.push(
-			'fontFamily',
-			'fontWeight',
-			'fontSize',
-			'text',
-			'textDecoration',
-			'textAlign',
-			'fontStyle',
-			'lineHeight',
-			'textBackgroundColor',
-			'useNative',
-			'path',
-
 			'radius',
 			'spacing',
 			'reverse'
