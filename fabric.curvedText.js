@@ -10,6 +10,20 @@
 		fabric.warn('fabric.CurvedText is already defined');
 		return;
 	}
+	var stateProperties = fabric.Object.prototype.stateProperties.concat();
+	stateProperties.push(
+			'fontFamily',
+			'fontWeight',
+			'fontSize',
+			'text',
+			'textDecoration',
+			'textAlign',
+			'fontStyle',
+			'lineHeight',
+			'textBackgroundColor',
+			'useNative',
+			'path'
+	);
 	/**
 	 * Group class
 	 * @class fabric.CurvedText
@@ -45,6 +59,13 @@
 		 * @default false
 		 */
 		reverse: false,
+
+		/**
+		 * List of properties to consider when checking if state of an object is changed ({@link fabric.Object#hasStateChanged})
+		 * as well as for history (undo/redo) purposes
+		 * @type Array
+		 */
+		stateProperties:      stateProperties,
 
 		delegatedProperties: {
 			backgroundColor:		true,
@@ -195,12 +216,16 @@
 			}
 		},
 		toObject: function(propertiesToInclude) {
-			return extend(this.callSuper('toObject', propertiesToInclude), {
+			var object = extend(this.callSuper('toObject', propertiesToInclude), {
 				radius: this.radius,
 				spacing: this.spacing,
 				reverse: this.reverse
 				//				letters: this.letters	//No need to pass this, the letters are recreated on the fly every time when initiated
 			});
+			if (!this.includeDefaultValues) {
+				this._removeDefaultValues(object);
+			}
+			return object;
 		},
 		/**
 		 * Returns string represenation of a group
@@ -212,16 +237,22 @@
 		/* _TO_SVG_START_ */
 		/**
 		 * Returns svg representation of an instance
+		 * @param {Function} [reviver] Method for further parsing of svg representation.
 		 * @return {String} svg representation of an instance
 		 */
-		toSVG: function() {
-			var objectsMarkup = [];
+		toSVG: function(reviver) {
+			var markup = [
+				'<g ',
+				'transform="', this.getSvgTransform(),
+				'">'
+			];
 			if (this.letters) {
 				for (var i = 0, len = this.letters.size(); i < len; i++) {
-					objectsMarkup.push(this.letters.item(i).toSVG());
+					markup.push(this._objects[i].toSVG(reviver));
 				}
 			}
-			return ('<g transform="' + this.getSvgTransform() + '">' + objectsMarkup.join('') + '</g>');
+			markup.push('</g>');
+			return reviver ? reviver(markup.join('')) : markup.join('');
 		}
 		/* _TO_SVG_END_ */
 	});
