@@ -20,6 +20,7 @@
 	_dimensionAffectingProps['radius']			= true;
 	_dimensionAffectingProps['spacing']			= true;
 	_dimensionAffectingProps['reverse']			= true;
+	_dimensionAffectingProps['fill']			= true;
 	
 	var delegatedProperties = fabric.Group.prototype.delegatedProperties;
 	delegatedProperties['backgroundColor']		= true;
