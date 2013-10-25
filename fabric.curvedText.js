@@ -84,6 +84,13 @@
 		*/
 		_dimensionAffectingProps: _dimensionAffectingProps,
 
+		/**
+		 * Added complexity
+		 */
+		complexity: function() {
+			this.callSuper('complexity');
+		};
+
 		initialize: function(text, options) {
 			options || (options = {});
 			this.letters = new fabric.Group([], {selectable: false, padding: 0});
