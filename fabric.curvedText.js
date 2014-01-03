@@ -89,7 +89,7 @@
 		 */
 		complexity: function() {
 			this.callSuper('complexity');
-		};
+		},
 
 		initialize: function(text, options) {
 			options || (options = {});
