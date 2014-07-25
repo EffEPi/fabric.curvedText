@@ -28,6 +28,10 @@
 	delegatedProperties['textDecoration']		= true;
 	delegatedProperties['stroke']				= true;
 	delegatedProperties['strokeWidth']			= true;
+	delegatedProperties['fontWeight']			= true;
+	delegatedProperties['fontStyle']			= true;
+	delegatedProperties['strokeWidth']			= true;
+	delegatedProperties['textAlign']			= true;
 	/**
 	 * Group class
 	 * @class fabric.CurvedText
@@ -53,13 +57,13 @@
 		 * @type fabricNumber
 		 * @default 20
 		 */
-		spacing: 15,
+		spacing: 20,
 
 //		letters: null,
 
 		/**
 		 * Reversing the radius (position of the original point)
-		 * @type Boolead
+		 * @type Boolean
 		 * @default false
 		 */
 		reverse: false,
@@ -123,12 +127,13 @@
 					align = 0;
 				// Text align
 				if (this.get('textAlign') === 'center' || this.get('textAlign') === 'justify') {
-					align = (this.spacing / 2) * (this.text.length - 1);
+					align = (this.spacing / 2) * (this.text.length);	// Remove '-1' after this.text.length for proper angle rendering
 				} else if (this.get('textAlign') === 'right') {
-					align = (this.spacing) * (this.text.length - 1);
-				}
+					align = (this.spacing) * (this.text.length);		// Remove '-1' after this.text.length for proper angle rendering
+				}	
 				for (var i = 0, len = this.text.length; i < len; i++) {
 					// Find coords of each letters (radians : angle*(Math.PI / 180)
+					
 					var multiplier = this.reverse ? 1 : -1;
 					curAngle = (multiplier * -i * parseInt(this.spacing, 10)) + (multiplier * align);
 					angleRadians = curAngle * (Math.PI / 180);
@@ -136,6 +141,7 @@
 					for (var key in this.delegatedProperties) {
 						this.letters.item(i).set(key, this.get(key));
 					}
+
 					this.letters.item(i).set('top', (multiplier * Math.cos(angleRadians) * this.radius));
 					this.letters.item(i).set('left', (multiplier * -Math.sin(angleRadians) * this.radius));
 					this.letters.item(i).setAngle(curAngle);
@@ -144,14 +150,16 @@
 				}
 				// Update group coords
 				this.letters._calcBounds();
-				this.letters._updateObjectsCoords();
+				this.letters.top = 0;
+				this.letters.left = this.letters.left - this.width / 2; // Change here, for proper group display
+				//this.letters._updateObjectsCoords();					// Commented off this line for group misplacement
 				this.letters.saveCoords();
-//				this.letters.render(ctx);
+				this.letters.render(ctx);
 				this.width = this.letters.width;
 				this.height = this.letters.height;
 			}
 		},
-		render: function(ctx, noTransform) {
+		/*render: function(ctx, noTransform) {							// Commented off this render section, since it created a ghost object
 			// do not render if object is not visible
 			if (!this.visible) return;
 			if (!this.letters) return;
