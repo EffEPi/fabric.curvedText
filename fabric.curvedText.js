@@ -126,10 +126,12 @@
 					angleRadians = 0,
 					align = 0;
 				// Text align
+				var rev = 0;
+				if (this.reverse) rev = 0.5;
 				if (this.get('textAlign') === 'center' || this.get('textAlign') === 'justify') {
-					align = (this.spacing / 2) * (this.text.length);	// Remove '-1' after this.text.length for proper angle rendering
+					align = (this.spacing / 2) * (this.text.length - rev);	// Remove '-1' after this.text.length for proper angle rendering
 				} else if (this.get('textAlign') === 'right') {
-					align = (this.spacing) * (this.text.length);		// Remove '-1' after this.text.length for proper angle rendering
+					align = (this.spacing) * (this.text.length - rev);		// Remove '-1' after this.text.length for proper angle rendering
 				}	
 				for (var i = 0, len = this.text.length; i < len; i++) {
 					// Find coords of each letters (radians : angle*(Math.PI / 180)
@@ -150,7 +152,10 @@
 				}
 				// Update group coords
 				this.letters._calcBounds();
-				this.letters.top = 0;
+				if (this.reverse)
+					this.letters.top = this.letters.top - this.height * 2.5;
+				else
+					this.letters.top = 0;
 				this.letters.left = this.letters.left - this.width / 2; // Change here, for proper group display
 				//this.letters._updateObjectsCoords();					// Commented off this line for group misplacement
 				this.letters.saveCoords();
