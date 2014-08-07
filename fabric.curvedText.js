@@ -21,6 +21,12 @@
 	_dimensionAffectingProps['spacing']			= true;
 	_dimensionAffectingProps['reverse']			= true;
 	_dimensionAffectingProps['fill']			= true;
+	_dimensionAffectingProps['effect']			= true;
+	_dimensionAffectingProps['width']			= true;
+	_dimensionAffectingProps['height']			= true;
+	_dimensionAffectingProps['range']			= true;
+	_dimensionAffectingProps['fontSize']		= true;
+	_dimensionAffectingProps['shadow']			= true;
 	
 	var delegatedProperties = fabric.Group.prototype.delegatedProperties;
 	delegatedProperties['backgroundColor']		= true;
@@ -28,6 +34,8 @@
 	delegatedProperties['textDecoration']		= true;
 	delegatedProperties['stroke']				= true;
 	delegatedProperties['strokeWidth']			= true;
+	delegatedProperties['shadow']				= true;
+
 	/**
 	 * Group class
 	 * @class fabric.CurvedText
