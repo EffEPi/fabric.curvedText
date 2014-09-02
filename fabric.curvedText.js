@@ -150,6 +150,8 @@
 					this.letters.item(i).set('padding', 0);
 					this.letters.item(i).set('selectable',false);
 				}
+				this.letters.left = -(this.letters.width / 2);
+				this.letters.top = - (this.letters.height / 2);
 				// Update group coords
 				this.letters._calcBounds();
 				this.letters._updateObjectsCoords();
