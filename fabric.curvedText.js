@@ -361,7 +361,7 @@
 			if(!this.letters)
 				return;
 
-			ctx.save();
+			//ctx.save();
 			this.transform(ctx);
 
 			var groupScaleFactor=Math.max(this.scaleX, this.scaleY);
