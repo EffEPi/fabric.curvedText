@@ -31,8 +31,6 @@
 	_dimensionAffectingProps['range']=true;
 	_dimensionAffectingProps['fontSize']=true;
 	_dimensionAffectingProps['shadow']=true;
-	_dimensionAffectingProps['effect']=true;
-	_dimensionAffectingProps['range']=true;
 	_dimensionAffectingProps['largeFont']=true;
 	_dimensionAffectingProps['smallFont']=true;
 
@@ -75,9 +73,9 @@
 		/**
 		 * Spacing between the letters
 		 * @type fabricNumber
-		 * @default 20
+		 * @default 0
 		 */
-		spacing: 15,
+		spacing: 0,
 //		letters: null,
 
 		/**
@@ -149,20 +147,35 @@
 			if(this.letters){
 				var curAngle=0,
 						angleRadians=0,
-						align=0;
-				// Text align
-				if(this.get('textAlign')==='center'||this.get('textAlign')==='justify'){
-					align=(this.spacing/2)*(this.text.length-1);
-				}else if(this.get('textAlign')==='right'){
-					align=(this.spacing)*(this.text.length-1);
+						align=0,
+						textWidth=0,
+						space = parseInt(this.spacing),
+						letterSpaceWidth = 15;
+				
+				//get normal text width
+				for(var i=0, len=this.text.length; i<len; i++){
+					if (this.letters.item(i).text == " ") textWidth += letterSpaceWidth + space;
+					else textWidth += this.letters.item(i).width + space;
 				}
+				// Text align
+				if(this.get('textAlign')==='right'){
+					curAngle = 90-(textWidth/2);
+				}else if(this.get('textAlign')==='left'){
+					curAngle = -90-(textWidth/2);
+				} else {
+					curAngle = -(textWidth / 2);
+				}
+				if (this.reverse) curAngle = -curAngle;
+
 				var width=0,
-						multiplier=this.reverse?1:-1;
+						multiplier=this.reverse?-1:1,
+						lastLetterWidth = 0;
+
 				for(var i=0, len=this.text.length; i<len; i++){
 					if(renderingCode!==this._isRendering)
 						return;
 					// Find coords of each letters (radians : angle*(Math.PI / 180)
-					curAngle=multiplier*(-i*parseInt(this.spacing, 10)+align);
+					curAngle = multiplier * ((multiplier * curAngle) + lastLetterWidth);
 					angleRadians=curAngle*(Math.PI/180);
 
 					for(var key in this.delegatedProperties){
@@ -173,18 +186,22 @@
 					this.letters.item(i).setAngle(0);
 					this.letters.item(i).set('padding', 0);
 
-					if(this.effect==='curved'){
-						this.letters.item(i).set('top', (multiplier*Math.cos(angleRadians)*this.radius));
-						this.letters.item(i).set('left', (multiplier*-Math.sin(angleRadians)*this.radius));
+					lastLetterWidth = this.letters.item(i).width + space;
+					if (this.letters.item(i).text == " ") lastLetterWidth = letterSpaceWidth + space;
 
+					if(this.effect==='curved'){
 						this.letters.item(i).setAngle(curAngle);
+						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
+						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
 						this.letters.item(i).set('selectable', false);
-
+						
 					}else if(this.effect==='arc'){//arc
-						this.letters.item(i).set('top', (multiplier*Math.cos(angleRadians)*this.radius));
-						this.letters.item(i).set('left', (multiplier*-Math.sin(angleRadians)*this.radius));
-
+						//depending on the position it occupies in the circle, now it uses always the horizontal size
+						//for example at 90 grades we should measure the vertical size, at 0 the horizontal
+						//at 45 the diagonal (maybe horizontal+vertical/2 should work...)
+						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
+						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
 						this.letters.item(i).set('selectable', false);
 					}else if(this.effect==='STRAIGHT'){//STRAIGHT
