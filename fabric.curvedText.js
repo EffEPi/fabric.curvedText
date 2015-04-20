@@ -146,60 +146,68 @@
 			this._isRendering=renderingCode;
 			if(this.letters){
 				var curAngle=0,
+						curAngleRotation = 0,
 						angleRadians=0,
 						align=0,
 						textWidth=0,
 						space = parseInt(this.spacing),
-						letterSpaceWidth = 15;
+						fixedLetterAngle=0;
 				
-				//get normal text width
-				for(var i=0, len=this.text.length; i<len; i++){
-					if (this.letters.item(i).text == " ") textWidth += letterSpaceWidth + space;
-					else textWidth += this.letters.item(i).width + space;
+				//get text width
+				if (this.effect=='curved') {
+					for(var i=0, len=this.text.length; i<len; i++){
+						textWidth += this.letters.item(i).width + space;
+					}
+					textWidth -= space;
+				} else if (this.effect=='arc') {
+					fixedLetterAngle = ((this.letters.item(0).fontSize + space) / this.radius) / (Math.PI/180);
+					textWidth = ((this.text.length+1) * (this.letters.item(0).fontSize + space));
 				}
 				// Text align
 				if(this.get('textAlign')==='right'){
-					curAngle = 90-(textWidth/2);
+					curAngle = 90-(((textWidth/2)/ this.radius) / (Math.PI/180));
 				}else if(this.get('textAlign')==='left'){
-					curAngle = -90-(textWidth/2);
+					curAngle = -90-(((textWidth/2)/ this.radius) / (Math.PI/180));
 				} else {
-					curAngle = -(textWidth / 2);
+					curAngle = -(((textWidth/2)/ this.radius) / (Math.PI/180));
 				}
 				if (this.reverse) curAngle = -curAngle;
 
 				var width=0,
 						multiplier=this.reverse?-1:1,
-						lastLetterWidth = 0;
+						thisLetterAngle = 0,
+						lastLetterAngle = 0;
 
 				for(var i=0, len=this.text.length; i<len; i++){
 					if(renderingCode!==this._isRendering)
 						return;
-					// Find coords of each letters (radians : angle*(Math.PI / 180)
-					curAngle = multiplier * ((multiplier * curAngle) + lastLetterWidth);
-					angleRadians=curAngle*(Math.PI/180);
 
 					for(var key in this.delegatedProperties){
 						this.letters.item(i).set(key, this.get(key));
 					}
+					
 					this.letters.item(i).set('left', (width));
 					this.letters.item(i).set('top', (0));
 					this.letters.item(i).setAngle(0);
 					this.letters.item(i).set('padding', 0);
 
-					lastLetterWidth = this.letters.item(i).width + space;
-					if (this.letters.item(i).text == " ") lastLetterWidth = letterSpaceWidth + space;
-
 					if(this.effect==='curved'){
-						this.letters.item(i).setAngle(curAngle);
+						thisLetterAngle = ((this.letters.item(i).width + space) / this.radius) / (Math.PI/180);
+						curAngleRotation = multiplier * ((multiplier * curAngle) + lastLetterAngle + (thisLetterAngle/2));
+						curAngle = multiplier * ((multiplier * curAngle) + lastLetterAngle);
+						angleRadians=curAngle*(Math.PI/180);
+						lastLetterAngle = thisLetterAngle;
+
+						this.letters.item(i).setAngle(curAngleRotation);
 						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
 						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
 						this.letters.item(i).set('selectable', false);
 						
 					}else if(this.effect==='arc'){//arc
-						//depending on the position it occupies in the circle, now it uses always the horizontal size
-						//for example at 90 grades we should measure the vertical size, at 0 the horizontal
-						//at 45 the diagonal (maybe horizontal+vertical/2 should work...)
+						curAngle = multiplier * ((multiplier * curAngle) + fixedLetterAngle);
+						angleRadians=curAngle*(Math.PI/180);
+
 						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
 						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
