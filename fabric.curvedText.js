@@ -31,8 +31,6 @@
 	_dimensionAffectingProps['range']=true;
 	_dimensionAffectingProps['fontSize']=true;
 	_dimensionAffectingProps['shadow']=true;
-	_dimensionAffectingProps['effect']=true;
-	_dimensionAffectingProps['range']=true;
 	_dimensionAffectingProps['largeFont']=true;
 	_dimensionAffectingProps['smallFont']=true;
 
