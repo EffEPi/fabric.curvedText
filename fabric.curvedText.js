@@ -141,6 +141,26 @@
 			}
 			this.callSuper('setText', text);
 		},
+		_initDimensions: function(ctx){
+			// from fabric.Text.prototype._initDimensions
+			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+			if (this.__skipDimension) {
+				return;
+			}
+			if (!ctx) {
+				ctx = fabric.util.createCanvasElement().getContext('2d');
+				this._setTextStyles(ctx);
+			}
+			this._textLines = this.text.split(this._reNewline);
+			this._clearCache();
+			var currentTextAlign = this.textAlign;
+			this.textAlign = 'left';
+			this.width = this._getTextWidth(ctx);
+			this.textAlign = currentTextAlign;
+			this.height = this._getTextHeight(ctx);
+			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+			this._render(ctx);
+		},
 		_render: function(ctx){
 			var renderingCode=fabric.util.getRandomInt(100, 999);
 			this._isRendering=renderingCode;
@@ -427,6 +447,7 @@
 		_set: function(key, value){
 			this.callSuper('_set', key, value);
 			if(this.letters){
+				this.letters.set(key,value);
 				//Properties are delegated with the object is rendered
 //				if (key in this.delegatedProperties) {
 //					var i = this.letters.size();
