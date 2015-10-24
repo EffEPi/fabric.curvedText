@@ -348,12 +348,24 @@
 						this.letters.item(i).set('top', -1*this.letters.item(i).get('height')/2);
 					}
 				}
-
-				// Update group coords
+				
+				var scaleX= this.letters.get('scaleX');
+		                var scaleY= this.letters.get('scaleY');
+		                var angle = this.letters.get('angle');
+						
+		                this.letters.set('scaleX', 1);
+		                this.letters.set('scaleY', 1);
+		                this.letters.set('angle', 0);
+		                
+                		// Update group coords
 				this.letters._calcBounds();
 				this.letters._updateObjectsCoords();
 				this.letters.saveCoords();
 				// this.letters.render(ctx);
+                
+		                this.letters.set('scaleX', scaleX);
+		                this.letters.set('scaleY', scaleY);
+		                this.letters.set('angle', angle);
 
 				this.width=this.letters.width;
 				this.height=this.letters.height;
