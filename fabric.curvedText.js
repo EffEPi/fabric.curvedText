@@ -178,12 +178,12 @@
 						fixedLetterAngle=0;
 
 				//get text width
-				if(this.effect=='curved'){
+				if(this.effect==='curved'){
 					for(var i=0, len=this.text.length; i<len; i++){
 						textWidth+=this.letters.item(i).width+space;
 					}
 					textWidth-=space;
-				}else if(this.effect=='arc'){
+				}else if(this.effect==='arc'){
 					fixedLetterAngle=((this.letters.item(0).fontSize+space)/this.radius)/(Math.PI/180);
 					textWidth=((this.text.length+1)*(this.letters.item(0).fontSize+space));
 				}
@@ -218,7 +218,7 @@
 
 					if(this.effect==='curved'){
 						thisLetterAngle=((this.letters.item(i).width+space)/this.radius)/(Math.PI/180);
-						curAngleRotation=multiplier*((multiplier*curAngle)+lastLetterAngle+(thisLetterAngle/2));
+						curAngleRotation=multiplier*((multiplier*curAngle)+lastLetterAngle+(thisLetterAngle/4));	//4 is better than 2 for some reason
 						curAngle=multiplier*((multiplier*curAngle)+lastLetterAngle);
 						angleRadians=curAngle*(Math.PI/180);
 						lastLetterAngle=thisLetterAngle;
