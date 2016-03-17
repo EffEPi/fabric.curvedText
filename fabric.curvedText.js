@@ -1,4 +1,4 @@
-(function(global){
+(function (global){
 
 	"use strict";
 
@@ -42,6 +42,10 @@
 	delegatedProperties['stroke']=true;
 	delegatedProperties['strokeWidth']=true;
 	delegatedProperties['shadow']=true;
+	delegatedProperties['fontWeight']=true;
+	delegatedProperties['fontStyle']=true;
+	delegatedProperties['strokeWidth']=true;
+	delegatedProperties['textAlign']=true;
 
 	/**
 	 * Group class
@@ -73,9 +77,9 @@
 		/**
 		 * Spacing between the letters
 		 * @type fabricNumber
-		 * @default 0
+		 * @default 20
 		 */
-		spacing: 0,
+		spacing: 20,
 //		letters: null,
 
 		/**
@@ -110,10 +114,10 @@
 		/**
 		 * Added complexity
 		 */
-		complexity: function(){
+		complexity: function (){
 			this.callSuper('complexity');
 		},
-		initialize: function(text, options){
+		initialize: function (text, options){
 			options||(options={});
 			this.letters=new fabric.Group([], {
 				selectable: false,
@@ -125,7 +129,7 @@
 //			this.callSuper('initialize', options);
 			this.setText(text);
 		},
-		setText: function(text){
+		setText: function (text){
 			if(this.letters){
 				while(text.length!==0&&this.letters.size()>=text.length){
 					this.letters.remove(this.letters.item(this.letters.size()-1));
@@ -141,62 +145,63 @@
 			}
 			this.callSuper('setText', text);
 		},
-		_initDimensions: function(ctx){
+		_initDimensions: function (ctx){
 			// from fabric.Text.prototype._initDimensions
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-			if (this.__skipDimension) {
+			if(this.__skipDimension){
 				return;
 			}
-			if (!ctx) {
-				ctx = fabric.util.createCanvasElement().getContext('2d');
+			if(!ctx){
+				ctx=fabric.util.createCanvasElement().getContext('2d');
 				this._setTextStyles(ctx);
 			}
-			this._textLines = this.text.split(this._reNewline);
+			this._textLines=this.text.split(this._reNewline);
 			this._clearCache();
-			var currentTextAlign = this.textAlign;
-			this.textAlign = 'left';
-			this.width = this._getTextWidth(ctx);
-			this.textAlign = currentTextAlign;
-			this.height = this._getTextHeight(ctx);
+			var currentTextAlign=this.textAlign;
+			this.textAlign='left';
+			this.width=this._getTextWidth(ctx);
+			this.textAlign=currentTextAlign;
+			this.height=this._getTextHeight(ctx);
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			this._render(ctx);
 		},
-		_render: function(ctx){
+		_render: function (ctx){
 			var renderingCode=fabric.util.getRandomInt(100, 999);
 			this._isRendering=renderingCode;
 			if(this.letters){
 				var curAngle=0,
-						curAngleRotation = 0,
+						curAngleRotation=0,
 						angleRadians=0,
 						align=0,
 						textWidth=0,
-						space = parseInt(this.spacing),
+						space=parseInt(this.spacing),
 						fixedLetterAngle=0;
-				
+
 				//get text width
-				if (this.effect=='curved') {
+				if(this.effect=='curved'){
 					for(var i=0, len=this.text.length; i<len; i++){
-						textWidth += this.letters.item(i).width + space;
+						textWidth+=this.letters.item(i).width+space;
 					}
-					textWidth -= space;
-				} else if (this.effect=='arc') {
-					fixedLetterAngle = ((this.letters.item(0).fontSize + space) / this.radius) / (Math.PI/180);
-					textWidth = ((this.text.length+1) * (this.letters.item(0).fontSize + space));
+					textWidth-=space;
+				}else if(this.effect=='arc'){
+					fixedLetterAngle=((this.letters.item(0).fontSize+space)/this.radius)/(Math.PI/180);
+					textWidth=((this.text.length+1)*(this.letters.item(0).fontSize+space));
 				}
 				// Text align
 				if(this.get('textAlign')==='right'){
-					curAngle = 90-(((textWidth/2)/ this.radius) / (Math.PI/180));
+					curAngle=90-(((textWidth/2)/this.radius)/(Math.PI/180));
 				}else if(this.get('textAlign')==='left'){
-					curAngle = -90-(((textWidth/2)/ this.radius) / (Math.PI/180));
-				} else {
-					curAngle = -(((textWidth/2)/ this.radius) / (Math.PI/180));
+					curAngle=-90-(((textWidth/2)/this.radius)/(Math.PI/180));
+				}else{
+					curAngle=-(((textWidth/2)/this.radius)/(Math.PI/180));
 				}
-				if (this.reverse) curAngle = -curAngle;
+				if(this.reverse)
+					curAngle=-curAngle;
 
 				var width=0,
 						multiplier=this.reverse?-1:1,
-						thisLetterAngle = 0,
-						lastLetterAngle = 0;
+						thisLetterAngle=0,
+						lastLetterAngle=0;
 
 				for(var i=0, len=this.text.length; i<len; i++){
 					if(renderingCode!==this._isRendering)
@@ -205,27 +210,27 @@
 					for(var key in this.delegatedProperties){
 						this.letters.item(i).set(key, this.get(key));
 					}
-					
+
 					this.letters.item(i).set('left', (width));
 					this.letters.item(i).set('top', (0));
 					this.letters.item(i).setAngle(0);
 					this.letters.item(i).set('padding', 0);
 
 					if(this.effect==='curved'){
-						thisLetterAngle = ((this.letters.item(i).width + space) / this.radius) / (Math.PI/180);
-						curAngleRotation = multiplier * ((multiplier * curAngle) + lastLetterAngle + (thisLetterAngle/2));
-						curAngle = multiplier * ((multiplier * curAngle) + lastLetterAngle);
+						thisLetterAngle=((this.letters.item(i).width+space)/this.radius)/(Math.PI/180);
+						curAngleRotation=multiplier*((multiplier*curAngle)+lastLetterAngle+(thisLetterAngle/2));
+						curAngle=multiplier*((multiplier*curAngle)+lastLetterAngle);
 						angleRadians=curAngle*(Math.PI/180);
-						lastLetterAngle = thisLetterAngle;
+						lastLetterAngle=thisLetterAngle;
 
 						this.letters.item(i).setAngle(curAngleRotation);
 						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
 						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
 						this.letters.item(i).set('selectable', false);
-						
+
 					}else if(this.effect==='arc'){//arc
-						curAngle = multiplier * ((multiplier * curAngle) + fixedLetterAngle);
+						curAngle=multiplier*((multiplier*curAngle)+fixedLetterAngle);
 						angleRadians=curAngle*(Math.PI/180);
 
 						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
@@ -348,24 +353,24 @@
 						this.letters.item(i).set('top', -1*this.letters.item(i).get('height')/2);
 					}
 				}
-				
-				var scaleX= this.letters.get('scaleX');
-		                var scaleY= this.letters.get('scaleY');
-		                var angle = this.letters.get('angle');
-						
-		                this.letters.set('scaleX', 1);
-		                this.letters.set('scaleY', 1);
-		                this.letters.set('angle', 0);
-		                
-                		// Update group coords
+
+				var scaleX=this.letters.get('scaleX');
+				var scaleY=this.letters.get('scaleY');
+				var angle=this.letters.get('angle');
+
+				this.letters.set('scaleX', 1);
+				this.letters.set('scaleY', 1);
+				this.letters.set('angle', 0);
+
+				// Update group coords
 				this.letters._calcBounds();
 				this.letters._updateObjectsCoords();
 				this.letters.saveCoords();
 				// this.letters.render(ctx);
-                
-		                this.letters.set('scaleX', scaleX);
-		                this.letters.set('scaleY', scaleY);
-		                this.letters.set('angle', angle);
+
+				this.letters.set('scaleX', scaleX);
+				this.letters.set('scaleY', scaleY);
+				this.letters.set('angle', angle);
 
 				this.width=this.letters.width;
 				this.height=this.letters.height;
@@ -374,16 +379,20 @@
 //				console.log('End rendering')
 			}
 		},
-		_renderOld: function(ctx){
+		_renderOld: function (ctx){
 			if(this.letters){
 				var curAngle=0,
 						angleRadians=0,
 						align=0;
 				// Text align
+				var rev=0;
+				if(this.reverse){
+					rev=0.5;
+				}
 				if(this.get('textAlign')==='center'||this.get('textAlign')==='justify'){
-					align=(this.spacing/2)*(this.text.length-1);
+					align=(this.spacing/2)*(this.text.length-rev);	// Remove '-1' after this.text.length for proper angle rendering
 				}else if(this.get('textAlign')==='right'){
-					align=(this.spacing)*(this.text.length-1);
+					align=(this.spacing)*(this.text.length-rev);	// Remove '-1' after this.text.length for proper angle rendering
 				}
 				var multiplier=this.reverse?1:-1;
 				for(var i=0, len=this.text.length; i<len; i++){
@@ -394,8 +403,8 @@
 					for(var key in this.delegatedProperties){
 						this.letters.item(i).set(key, this.get(key));
 					}
-					this.letters.item(i).set('top', (-Math.cos(angleRadians)*this.radius));
-					this.letters.item(i).set('left', (+Math.sin(angleRadians)*this.radius));
+					this.letters.item(i).set('top', (multiplier-Math.cos(angleRadians)*this.radius));
+					this.letters.item(i).set('left', (multiplier+Math.sin(angleRadians)*this.radius));
 					this.letters.item(i).setAngle(curAngle);
 					this.letters.item(i).set('padding', 0);
 					this.letters.item(i).set('selectable', false);
@@ -417,7 +426,7 @@
 				this.letters.top=-(this.letters.height/2);
 			}
 		},
-		render: function(ctx, noTransform){
+		render: function (ctx, noTransform){
 			// do not render if object is not visible
 			if(!this.visible)
 				return;
@@ -444,7 +453,7 @@
 //				object.borderScaleFactor=groupScaleFactor;
 //				object.hasRotatingPoint=false;
 
-		 object.render(ctx);
+				object.render(ctx);
 
 //				object.borderScaleFactor=originalScaleFactor;
 //				object.hasRotatingPoint=originalHasRotatingPoint;
@@ -462,10 +471,10 @@
 		/**
 		 * @private
 		 */
-		_set: function(key, value){
+		_set: function (key, value){
 			this.callSuper('_set', key, value);
 			if(this.letters){
-				this.letters.set(key,value);
+				this.letters.set(key, value);
 				//Properties are delegated with the object is rendered
 //				if (key in this.delegatedProperties) {
 //					var i = this.letters.size();
@@ -479,7 +488,7 @@
 				}
 			}
 		},
-		toObject: function(propertiesToInclude){
+		toObject: function (propertiesToInclude){
 			var object=extend(this.callSuper('toObject', propertiesToInclude), {
 				radius: this.radius,
 				spacing: this.spacing,
@@ -499,7 +508,7 @@
 		 * Returns string represenation of a group
 		 * @return {String}
 		 */
-		toString: function(){
+		toString: function (){
 			return '#<fabric.CurvedText ('+this.complexity()+'): { "text": "'+this.text+'", "fontFamily": "'+this.fontFamily+'", "radius": "'+this.radius+'", "spacing": "'+this.spacing+'", "reverse": "'+this.reverse+'" }>';
 		},
 		/* _TO_SVG_START_ */
@@ -508,7 +517,7 @@
 		 * @param {Function} [reviver] Method for further parsing of svg representation.
 		 * @return {String} svg representation of an instance
 		 */
-		toSVG: function(reviver){
+		toSVG: function (reviver){
 			var markup=[
 				'<g ',
 				'transform="', this.getSvgTransform(),
@@ -533,7 +542,7 @@
 	 * @param {Object} [options] Options object
 	 * @return {fabric.CurvedText} An instance of fabric.CurvedText
 	 */
-	fabric.CurvedText.fromObject=function(object){
+	fabric.CurvedText.fromObject=function (object){
 		return new fabric.CurvedText(object.text, clone(object));
 	};
 
