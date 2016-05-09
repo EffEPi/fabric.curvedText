@@ -218,12 +218,11 @@
 
 					if(this.effect==='curved'){
 						thisLetterAngle=((this.letters.item(i).width+space)/this.radius)/(Math.PI/180);
-						curAngleRotation=multiplier*((multiplier*curAngle)+lastLetterAngle+(thisLetterAngle/4));	//4 is better than 2 for some reason
 						curAngle=multiplier*((multiplier*curAngle)+lastLetterAngle);
 						angleRadians=curAngle*(Math.PI/180);
 						lastLetterAngle=thisLetterAngle;
 
-						this.letters.item(i).setAngle(curAngleRotation);
+						this.letters.item(i).setAngle(curAngle);
 						this.letters.item(i).set('top', multiplier*-1*(Math.cos(angleRadians)*this.radius));
 						this.letters.item(i).set('left', multiplier*(Math.sin(angleRadians)*this.radius));
 						this.letters.item(i).set('padding', 0);
