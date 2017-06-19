@@ -126,8 +126,13 @@
 			this.__skipDimension=true;
 			this.setOptions(options);
 			this.__skipDimension=false;
-//			this.callSuper('initialize', options);
+			
+			if(parseFloat(fabric.version) >= 2) {
+				this.callSuper('initialize', text, options);
+			}
+
 			this.setText(text);
+			this._render();
 		},
 		setText: function (text){
 			if(this.letters){
@@ -144,6 +149,7 @@
 				}
 			}
 			this.callSuper('setText', text);
+			this._render();
 		},
 		_initDimensions: function (ctx){
 			// from fabric.Text.prototype._initDimensions
@@ -159,9 +165,9 @@
 			this._clearCache();
 			var currentTextAlign=this.textAlign;
 			this.textAlign='left';
-			this.width=this._getTextWidth(ctx);
+			this.width=this.getWidth();
 			this.textAlign=currentTextAlign;
-			this.height=this._getTextHeight(ctx);
+			this.height=this.getHeight();
 			// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			this._render(ctx);
 		},
@@ -364,7 +370,7 @@
 				// Update group coords
 				this.letters._calcBounds();
 				this.letters._updateObjectsCoords();
-				this.letters.saveCoords();
+				//this.letters.saveCoords();
 				// this.letters.render(ctx);
 
 				this.letters.set('scaleX', scaleX);
@@ -488,7 +494,7 @@
 			}
 		},
 		toObject: function (propertiesToInclude){
-			var object=extend(this.callSuper('toObject', propertiesToInclude), {
+			var object = extend(this.callSuper('toObject', propertiesToInclude), {
 				radius: this.radius,
 				spacing: this.spacing,
 				reverse: this.reverse,
@@ -496,8 +502,9 @@
 				range: this.range,
 				smallFont: this.smallFont,
 				largeFont: this.largeFont
-						//				letters: this.letters	//No need to pass this, the letters are recreated on the fly every time when initiated
+				//letters: this.letters	//No need to pass this, the letters are recreated on the fly every time when initiated
 			});
+
 			if(!this.includeDefaultValues){
 				this._removeDefaultValues(object);
 			}

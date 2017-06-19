@@ -1,0 +1,159 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+	canvas {
+		border:1px solid #000;
+	}
+  </style>
+</head>
+<body>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/2.0.0-beta.1/fabric.js"></script>
+	<script src="http://code.jquery.com/jquery-git.js"></script>
+	<script src="fabric.curvedText.js"></script>
+
+	<canvas id="c" width="400" height="200"></canvas><br/>
+	<input type="text" id="text" value="CurvedText" /><br>
+	
+	Reverse : <input type="checkbox" name="reverse" id="reverse" /><br>
+	Radius : <input type="range" min="0" max="100" value="50" id="radius" /><br>
+	Spacing : <input type="range" min="5" max="40" value="20" id="spacing" /><br>
+	Color : <input type="color" value="#0000ff" id="fill" /><br>
+	Effect : 
+	<select name="effect" id="effect" >
+	  <option value="curved">Curved</option>
+	  <option value="arc">Arc</option>
+	  <option value="STRAIGHT">STRAIGHT</option>
+	  <option value="smallToLarge">smallToLarge</option>
+	  <option value="largeToSmallTop">largeToSmallToped</option>
+	  <option value="largeToSmallBottom">largeToSmallBottom</option>
+	  <option value="bulge">bulge</option>
+	</select>
+	
+	<br>
+	<br>
+	
+	<button id="convert">Convert Text/Curved</button>
+	<button id="save">Save/Reload</button>
+	
+	<script>
+	$(function () {
+		canvas = new fabric.Canvas('c');
+		canvas.on('selection:cleared', onDeSelected);
+		canvas.on('object:selected', onSelected);
+		canvas.on('selection:created', onSelected);
+		var CurvedText = new fabric.CurvedText('CurvedText',{
+			//width: 100,
+			//height: 50,
+			left: 100,
+			top: 100,
+			textAlign: 'center',
+			fill: '#0000FF',
+			radius: 150,
+			fontSize: 20,
+			spacing: 20
+			//fontFamily: 'Arial'
+		});
+		canvas.add(CurvedText).renderAll();
+		canvas.setActiveObject(canvas.item(canvas.getObjects().length-1));
+
+		$('#text').keyup(function(){
+			var obj = canvas.getActiveObject();
+			if(obj){
+				obj.setText(this.value);
+				canvas.renderAll();
+			}
+		});
+
+		$('#reverse').click(function(){
+			var obj = canvas.getActiveObject();
+			if(obj){
+				obj.set('reverse',$(this).is(':checked')); 
+				canvas.renderAll();
+			}
+		});
+
+		$('#radius, #spacing, #fill').change(function(){
+			var obj = canvas.getActiveObject();
+			if(obj){
+				obj.set($(this).attr('id'),$(this).val()); 
+			}
+			canvas.renderAll();
+		});
+
+		$('#radius, #spacing, #effect').change(function(){
+			var obj = canvas.getActiveObject();
+			if(obj){
+				obj.set($(this).attr('id'),$(this).val()); 
+			}
+			canvas.renderAll();
+		});
+
+		$('#fill').change(function(){
+			var obj = canvas.getActiveObject();
+			if(obj){
+				obj.setFill($(this).val()); 
+			}
+			canvas.renderAll();
+		});
+
+		$('#save').click(function() {
+			var design = JSON.stringify(canvas.toJSON());
+			canvas.clear();
+			canvas.renderAll();
+			canvas.loadFromJSON(design, function() {
+				console.log('loaded');      
+				canvas.renderAll();
+			});
+		});
+		
+		$('#convert').click(function(){
+			var props = {};
+			var obj = canvas.getActiveObject();
+			if(obj){
+				if(/curvedText/.test(obj.type)) {
+					default_text = obj.getText();
+					props = obj.toObject();
+					delete props['type'];
+					var textSample = new fabric.Text(default_text, props);
+				}else if(/text/.test(obj.type)) {
+					default_text = obj.getText();
+					props = obj.toObject();
+					delete props['type'];
+					props['textAlign'] = 'center';
+					props['radius'] = 50;
+					props['spacing'] = 20;
+					var textSample = new fabric.CurvedText(default_text, props);
+				}
+				canvas.remove(obj);
+				canvas.add(textSample).renderAll();
+				canvas.setActiveObject(canvas.item(canvas.getObjects().length-1));
+			}
+		});
+	});
+		
+	function onSelected(){
+		var obj = canvas.getActiveObject();
+		$('#text').val(obj.getText());
+		$('#reverse').prop('checked', obj.get('reverse'));
+		$('#radius').val(obj.get('radius'));
+		$('#spacing').val(obj.get('spacing'));
+		$('#fill').val(obj.getFill());
+		if(obj.getEffect) {
+			$('#effect').val(obj.getEffect());
+		}
+	}
+
+	function onDeSelected(){
+		$('#text').val('');
+		$('#reverse').prop('checked', false);
+		$('#radius').val(50);
+		$('#spacing').val(20);
+		$('#fill').val('#0000FF');
+		$('#effect').val('curved');
+	}
+	</script>
+
+</body>
+</html>
