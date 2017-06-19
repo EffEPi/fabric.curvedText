@@ -370,7 +370,7 @@
 				// Update group coords
 				this.letters._calcBounds();
 				this.letters._updateObjectsCoords();
-				this.letters.saveCoords();
+				//this.letters.saveCoords();
 				// this.letters.render(ctx);
 
 				this.letters.set('scaleX', scaleX);
