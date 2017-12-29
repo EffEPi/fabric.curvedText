@@ -356,6 +356,88 @@
 						this.letters.item(i).set('selectable', false);
 
 						this.letters.item(i).set('top', -1*this.letters.item(i).get('height')/2);
+					} else if(this.effect==='upward'){//upward
+						var small=parseInt(this.smallFont);
+						var large=parseInt(this.largeFont);
+						//var small = 20;
+						//var large = 75;
+						var difference=large-small;
+						var center=Math.ceil(this.text.length/2);
+						var step=difference/(this.text.length);
+						var newfont=small+(i*step);
+
+						//var newfont=(i*this.smallFont)+15;
+
+						this.letters.item(i).set('fontSize', (newfont));
+						//this.letters.item(i).set('top', (0));
+						this.letters.item(i).set('left', (width));
+						width+=this.letters.item(i).get('width');
+						/*this.letters.item(i).set({
+						 borderColor: 'red',
+						 cornerColor: 'green',
+						 cornerSize: 6,
+						 transparentCorners: false
+						 });*/
+						this.letters.item(i).set('padding', 0);
+						this.letters.item(i).set('selectable', false);
+						this.letters.item(i).set('top', -1*this.letters.item(i).get('fontSize'));
+						//this.letters.width=width;
+						//this.letters.height=this.letters.item(i).get('height');
+
+					} else if(this.effect==='downward'){//downward
+						var small=parseInt(this.smallFont);
+						var large=parseInt(this.largeFont);
+						//var small = 20;
+						//var large = 75;
+						var difference=large-small;
+						var center=Math.ceil(this.text.length/2);
+						var step=difference/(this.text.length);
+						var newfont=small+(i*step);
+
+						this.letters.item(i).set('fontSize', (newfont));
+						this.letters.item(i).set('left', (width));
+						width+=this.letters.item(i).get('width');
+						this.letters.item(i).set('padding', 0);
+						this.letters.item(i).set('selectable', false);
+						this.letters.item(i).set('top', 0);
+
+					} else if(this.effect==='pinch'){//pinch
+						var small=parseInt(this.smallFont);
+						var large=parseInt(this.largeFont);
+						var difference=large-small;
+						var center=Math.ceil(this.text.length/2);
+						var step=difference/(this.text.length-center);
+						if(i>=center)
+							var newfont=small+(i*step);
+						else
+							var newfont=large-((i-center+1)*step);
+						this.letters.item(i).set('fontSize', (newfont));
+
+						this.letters.item(i).set('left', (width));
+						width+=this.letters.item(i).get('width');
+
+						this.letters.item(i).set('padding', 0);
+						this.letters.item(i).set('selectable', false);
+						this.letters.item(i).set('top', -1*this.letters.item(i).get('height')/2);
+					} else if(this.effect==='bridge'){//bridge
+						fixedLetterAngle=((this.letters.item(0).fontSize+space)/this.radius)/(Math.PI/180);
+						curAngle=multiplier*((multiplier*curAngle)+fixedLetterAngle);
+						angleRadians=curAngle*(Math.PI/180);
+						var small=parseInt(this.smallFont);
+						var large=parseInt(this.largeFont);
+						var difference=large-small;
+						var center=Math.ceil(this.text.length/2);
+						var step=difference/(this.text.length-center);
+						if(i>=center)
+							var newfont=small+(i*step);
+						else
+							var newfont=large-((i-center+1)*step);
+						this.letters.item(i).set('fontSize', (newfont));
+						this.letters.item(i).set('left', (width));
+						width+=this.letters.item(i).get('width');
+						this.letters.item(i).set('top', 0);
+						this.letters.item(i).set('padding', 0);
+						this.letters.item(i).set('selectable', false);
 					}
 				}
 
