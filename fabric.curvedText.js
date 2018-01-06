@@ -548,9 +548,15 @@
 	 * @param {Object} [options] Options object
 	 * @return {fabric.CurvedText} An instance of fabric.CurvedText
 	 */
-	fabric.CurvedText.fromObject=function (object){
-		return new fabric.CurvedText(object.text, clone(object));
-	};
+    fabric.CurvedText.fromObject=function (object, callback)
+    {
+        var newObject = new fabric.CurvedText(object.text, clone(object));
+        if(typeof callback !== "undefined") {
+            callback(newObject, false);
+		} else {
+            return(newObject);
+		}
+    };
 
 	fabric.util.createAccessors(fabric.CurvedText);
 
