@@ -153,7 +153,7 @@
         });
 
         if (effect === 'curved') {
-          thisLetterAngle = ((char.getScaledWidth() + space) / this.radius) / (Math.PI / 180);
+          thisLetterAngle = ((char.width + space) / this.radius) / (Math.PI / 180);
           thisCurAngle = multiplier * ((multiplier * curAngle) + letterAngle);
           const angleRadians = thisCurAngle * (Math.PI / 180);
 
@@ -200,8 +200,8 @@
             left: width,
             padding: 0,
             selectable: false,
+            top: (-1 * char.get('fontSize')) + index,
           });
-          char.set('top', (-1 * newFont) + index);
 
           thisWidth = width + char.getScaledWidth();
         } else if (effect === 'largetosmalltop') {
@@ -220,8 +220,8 @@
             cornerSize: 6,
             transparentCorners: false,
             selectable: false,
+            top: (-1 * char.get('fontSize')) + (index / this.text.length),
           });
-          char.set('top', (-1 * newFont) + (index / this.text.length));
 
           thisWidth = width + char.getScaledWidth();
         } else if (effect === 'largetosmallbottom') {
@@ -240,8 +240,8 @@
             cornerSize: 6,
             transparentCorners: false,
             selectable: false,
+            top: (-1 * char.get('fontSize')) - index,
           });
-          char.set('top', (-1 * newFont) - index);
 
           thisWidth = width + char.getScaledWidth();
         } else if (effect === 'bulge') {
@@ -259,8 +259,8 @@
             left: width,
             padding: 0,
             selectable: false,
+            top: -1 * (char.get('height') / 2),
           });
-          char.set('top', -1 * (char.get('height') / 2));
 
           thisWidth = width + char.getScaledWidth();
         }
@@ -351,10 +351,10 @@
         this.letters.set('scaleY', scaleY);
         this.letters.set('angle', angle);
 
-        this.width = this.letters.getScaledWidth();
-        this.height = this.letters.getScaledHeight();
-        this.letters.set('left', -(this.letters.getScaledWidth() / 2));
-        this.letters.set('top', -(this.letters.getScaledHeight() / 2));
+        this.width = this.letters.width;
+        this.height = this.letters.height;
+        this.letters.set('left', -(this.letters.width / 2));
+        this.letters.set('top', -(this.letters.height / 2));
       }
     },
 
